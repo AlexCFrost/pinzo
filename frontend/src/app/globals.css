@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f6f6f8;
   --foreground: #171717;
 }
 
@@ -10,17 +10,41 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Custom Colors from Prototype */
+  --color-primary: #2513ec;
+  --color-background-light: #f6f6f8;
+  --color-background-dark: #09090b;
+  --color-surface-dark: #121214;
+  --color-border-dark: #1f1f23;
+
+  --font-display: "Inter", sans-serif;
+
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Dark mode media query removed for now to prevent mixed theme state */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Prototype Utilities */
+.glass-nav {
+  @apply sticky top-0 z-50;
+  background: rgba(9, 9, 11, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gradient-blur {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(37, 19, 236, 0.12) 0%, rgba(37, 19, 236, 0) 70%);
+  z-index: -1;
+  filter: blur(40px);
 }
