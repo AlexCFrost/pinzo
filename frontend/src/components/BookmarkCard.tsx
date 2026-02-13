@@ -1,6 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect } from 'react'
 
 type Bookmark = {
   id: string
@@ -11,9 +12,18 @@ type Bookmark = {
 
 export default function BookmarkCard({ bookmark }: { bookmark: Bookmark }) {
   const supabase = createClient()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleDelete = async () => {
-    await supabase.from('bookmarks').delete().eq('id', bookmark.id)
+    const { error } = await supabase.from('bookmarks').delete().eq('id', bookmark.id)
+    if (error) {
+      console.error('Error deleting bookmark:', error)
+      alert('Failed to delete bookmark')
+    }
   }
 
   return (
@@ -32,7 +42,7 @@ export default function BookmarkCard({ bookmark }: { bookmark: Bookmark }) {
             {bookmark.url}
           </a>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            {new Date(bookmark.created_at).toLocaleDateString()}
+            {mounted ? new Date(bookmark.created_at).toLocaleDateString() : ''}
           </p>
         </div>
         <button

@@ -7,6 +7,7 @@ export default function BookmarkForm() {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -14,20 +15,26 @@ export default function BookmarkForm() {
     if (!title || !url) return
 
     setLoading(true)
+    setError(null)
     
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
     if (user) {
-      await supabase.from('bookmarks').insert({
+      const { error: insertError } = await supabase.from('bookmarks').insert({
         title,
         url,
         user_id: user.id,
       })
 
-      setTitle('')
-      setUrl('')
+      if (insertError) {
+        setError(insertError.message)
+        console.error('Error inserting bookmark:', insertError)
+      } else {
+        setTitle('')
+        setUrl('')
+      }
     }
 
     setLoading(false)
@@ -39,6 +46,11 @@ export default function BookmarkForm() {
         Add New Bookmark
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md">
+            {error}
+          </div>
+        )}
         <div>
           <label
             htmlFor="title"
