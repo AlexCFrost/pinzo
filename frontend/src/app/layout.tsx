@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -23,13 +24,16 @@ export const metadata: Metadata = {
   description: "Organize and manage your bookmarks with real-time sync across all your devices",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const theme = cookieStore.get('theme')?.value || 'dark';
+
   return (
-    <html lang="en">
+    <html lang="en" className={theme === 'dark' ? 'dark' : ''}>
       <head>
         <link
           href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
@@ -39,19 +43,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const theme = localStorage.getItem('theme') || 'dark';
-              document.documentElement.classList.toggle('dark', theme === 'dark');
-            })();
-          `
-        }} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
-        <ThemeProvider>
+        <ThemeProvider initialTheme={theme}>
           {children}
         </ThemeProvider>
       </body>

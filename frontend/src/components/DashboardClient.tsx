@@ -101,7 +101,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
     }
 
     return (
-        <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+        <div className="bg-background-light text-foreground min-h-screen font-display">
             {/* Delete confirmation modal */}
             {deleteModal.show && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -110,13 +110,13 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                         onClick={cancelDelete}
                     ></div>
                     
-                    <div className="relative bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                    <div className="relative bg-background-light border border-border-dark rounded-2xl p-6 max-w-sm w-full shadow-2xl">
                         <div className="text-center mb-6">
                             <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                                 <span className="material-icons-round text-red-500 text-2xl">delete_outline</span>
                             </div>
-                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Delete Bookmark?</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <h3 className="text-lg font-semibold text-foreground mb-2">Delete Bookmark?</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 This action cannot be undone. Are you sure you want to delete this bookmark?
                             </p>
                         </div>
@@ -124,7 +124,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                         <div className="flex gap-3">
                             <button
                                 onClick={cancelDelete}
-                                className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-background-dark hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium text-sm transition-all"
+                                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 text-foreground rounded-lg font-medium text-sm transition-all"
                             >
                                 Cancel
                             </button>
@@ -151,14 +151,15 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                         <ThemeToggle />
                         <button
                             onClick={handleSignOut}
-                            className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                            className="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors cursor-pointer"
                         >
                             Sign Out
                         </button>
                         {user.user_metadata?.avatar_url && (
-                            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-border-dark">
+                            <div className="w-8 h-8 rounded-full overflow-hidden border border-border-dark">
                                 <img
                                     alt="Profile"
+                                    referrerPolicy="no-referrer"
                                     className="w-full h-full object-cover"
                                     src={user.user_metadata.avatar_url}
                                 />
@@ -170,24 +171,24 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
 
             <main className="pt-24 pb-12 px-6 max-w-5xl mx-auto min-h-screen flex flex-col">
                 <div className="mb-20">
-                    <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-2 rounded-xl shadow-xl shadow-primary/5">
+                    <div className="bg-background-light border border-border-dark p-2 rounded-xl shadow-xl shadow-primary/5">
                         <div className="flex flex-col md:flex-row items-center gap-2">
-                            <div className="flex-1 w-full flex items-center px-4 py-2 bg-slate-50 dark:bg-background-dark/50 rounded-lg">
-                                <span className="material-icons-round text-slate-400 dark:text-slate-500 mr-3 text-lg">title</span>
+                            <div className="flex-1 w-full flex items-center px-4 py-2 bg-background-light border border-border-dark rounded-lg">
+                                <span className="material-icons-round text-gray-400 dark:text-gray-500 mr-3 text-lg">title</span>
                                 <input
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none"
+                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-foreground placeholder-gray-400 dark:placeholder-gray-500 outline-none"
                                     placeholder="Title (e.g. Design Inspiration)"
                                     type="text"
                                 />
                             </div>
-                            <div className="flex-[2] w-full flex items-center px-4 py-2 bg-slate-50 dark:bg-background-dark/50 rounded-lg">
-                                <span className="material-icons-round text-slate-400 dark:text-slate-500 mr-3 text-lg">link</span>
+                            <div className="flex-[2] w-full flex items-center px-4 py-2 bg-background-light border border-border-dark rounded-lg">
+                                <span className="material-icons-round text-gray-400 dark:text-gray-500 mr-3 text-lg">link</span>
                                 <input
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
-                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none"
+                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-foreground placeholder-gray-400 dark:placeholder-gray-500 outline-none"
                                     placeholder="Paste URL here..."
                                     type="text"
                                 />
@@ -222,8 +223,8 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                                     <span className="material-icons-round text-primary text-[10px]">priority_high</span>
                                 </div>
                             </div>
-                            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">Your library is empty</h1>
-                            <p className="text-slate-500 dark:text-slate-400 mb-10 leading-relaxed text-sm">
+                            <h1 className="text-2xl font-semibold text-foreground mb-3">Your library is empty</h1>
+                            <p className="text-gray-500 dark:text-gray-400 mb-10 leading-relaxed text-sm">
                                 Clean space, clean mind. Start building your personal knowledge base by adding your first bookmark above.
                             </p>
                         </div>
@@ -236,7 +237,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                                 href={bookmark.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group block bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl p-5 hover:border-primary/50 transition-all relative"
+                                className="group block bg-background-light border border-border-dark rounded-xl p-5 hover:border-primary/50 transition-all relative"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
@@ -245,16 +246,16 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                                     <div className="flex items-center space-x-2">
                                         <button
                                             onClick={(e) => handleDelete(e, bookmark.id)}
-                                            className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                                             title="Delete bookmark"
                                         >
                                             <span className="material-icons-round text-xl">delete_outline</span>
                                         </button>
-                                        <span className="material-icons-round text-slate-400 group-hover:text-primary transition-colors">arrow_outward</span>
+                                        <span className="material-icons-round text-gray-400 group-hover:text-primary transition-colors">arrow_outward</span>
                                     </div>
                                 </div>
-                                <h3 className="font-semibold text-slate-900 dark:text-white mb-1 line-clamp-1">{bookmark.title}</h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{bookmark.url}</p>
+                                <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{bookmark.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{bookmark.url}</p>
                             </a>
                         ))}
                     </div>
