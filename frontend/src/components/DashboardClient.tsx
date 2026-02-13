@@ -3,6 +3,8 @@
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import Logo from './Logo'
+import ThemeToggle from './ThemeToggle'
 
 interface Bookmark {
     id: string
@@ -17,8 +19,10 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
     const [title, setTitle] = useState('')
     const [url, setUrl] = useState('')
     const [loading, setLoading] = useState(false)
+    const [deleteModal, setDeleteModal] = useState<{ show: boolean; bookmarkId: string | null }>({ show: false, bookmarkId: null })
     const router = useRouter()
 
+    // Set up real-time subscription for bookmark changes across tabs
     useEffect(() => {
         const supabase = createClient()
 
@@ -81,31 +85,78 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
         e.preventDefault()
         e.stopPropagation()
 
+        setDeleteModal({ show: true, bookmarkId: id })
+    }
+
+    const confirmDelete = async () => {
+        if (!deleteModal.bookmarkId) return
+
         const supabase = createClient()
-        await supabase.from('bookmarks').delete().eq('id', id)
+        await supabase.from('bookmarks').delete().eq('id', deleteModal.bookmarkId)
+        setDeleteModal({ show: false, bookmarkId: null })
+    }
+
+    const cancelDelete = () => {
+        setDeleteModal({ show: false, bookmarkId: null })
     }
 
     return (
         <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+            {/* Delete confirmation modal */}
+            {deleteModal.show && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div 
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={cancelDelete}
+                    ></div>
+                    
+                    <div className="relative bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                        <div className="text-center mb-6">
+                            <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <span className="material-icons-round text-red-500 text-2xl">delete_outline</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Delete Bookmark?</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                This action cannot be undone. Are you sure you want to delete this bookmark?
+                            </p>
+                        </div>
+                        
+                        <div className="flex gap-3">
+                            <button
+                                onClick={cancelDelete}
+                                className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-background-dark hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium text-sm transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-sm transition-all shadow-lg shadow-red-500/20"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <nav className="glass-nav">
                 <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center">
                         <div className="flex items-center space-x-2.5">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                <span className="material-icons-round text-white text-xl">push_pin</span>
-                            </div>
+                            <Logo className="w-8 h-auto" />
                             <span className="font-bold text-xl tracking-tight">Pinzo</span>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-6">
+                    <div className="flex items-center space-x-4">
+                        <ThemeToggle />
                         <button
                             onClick={handleSignOut}
-                            className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                            className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                         >
                             Sign Out
                         </button>
                         {user.user_metadata?.avatar_url && (
-                            <div className="w-8 h-8 rounded-full overflow-hidden border border-border-dark">
+                            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 dark:border-border-dark">
                                 <img
                                     alt="Profile"
                                     className="w-full h-full object-cover"
@@ -122,21 +173,21 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                     <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-2 rounded-xl shadow-xl shadow-primary/5">
                         <div className="flex flex-col md:flex-row items-center gap-2">
                             <div className="flex-1 w-full flex items-center px-4 py-2 bg-slate-50 dark:bg-background-dark/50 rounded-lg">
-                                <span className="material-icons-round text-slate-400 mr-3 text-lg">title</span>
+                                <span className="material-icons-round text-slate-400 dark:text-slate-500 mr-3 text-lg">title</span>
                                 <input
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-500 outline-none"
+                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none"
                                     placeholder="Title (e.g. Design Inspiration)"
                                     type="text"
                                 />
                             </div>
                             <div className="flex-[2] w-full flex items-center px-4 py-2 bg-slate-50 dark:bg-background-dark/50 rounded-lg">
-                                <span className="material-icons-round text-slate-400 mr-3 text-lg">link</span>
+                                <span className="material-icons-round text-slate-400 dark:text-slate-500 mr-3 text-lg">link</span>
                                 <input
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
-                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-500 outline-none"
+                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none"
                                     placeholder="Paste URL here..."
                                     type="text"
                                 />
@@ -152,7 +203,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                         </div>
                     </div>
                     <div className="mt-4 flex justify-center">
-                        <p className="text-[11px] text-slate-500 uppercase tracking-widest font-semibold flex items-center opacity-70">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-widest font-semibold flex items-center opacity-70">
                             <span className="material-icons-round text-[14px] mr-1.5 text-primary">bolt</span>
                             Your focus, organized.
                         </p>
@@ -203,7 +254,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                                     </div>
                                 </div>
                                 <h3 className="font-semibold text-slate-900 dark:text-white mb-1 line-clamp-1">{bookmark.title}</h3>
-                                <p className="text-sm text-slate-500 truncate">{bookmark.url}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{bookmark.url}</p>
                             </a>
                         ))}
                     </div>

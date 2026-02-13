@@ -1,6 +1,8 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import Logo from '@/components/Logo'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Home() {
   const supabase = createClient()
@@ -16,15 +18,20 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background-light dark:bg-background-dark font-display relative overflow-hidden">
-      {/* Background Decoration */}
+      {/* Theme toggle button */}
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
+      {/* Background gradient decoration */}
       <div className="gradient-blur left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
 
       <main className="flex flex-col items-center justify-center w-full max-w-md px-6">
 
-        {/* Logo Section */}
+        {/* Logo and branding */}
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-xl shadow-primary/20">
-            <span className="material-icons-round text-white text-3xl">push_pin</span>
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl mb-6 shadow-xl p-4">
+            <Logo className="w-full h-auto" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">Pinzo</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
@@ -32,7 +39,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Card Section */}
+        {/* Sign in card */}
         <div className="w-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-2 rounded-2xl shadow-xl shadow-primary/5">
           <div className="p-6 text-center space-y-6">
             <div className="space-y-2">
@@ -56,15 +63,15 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer info */}
+        {/* Security badges */}
         <div className="mt-12 flex items-center justify-center space-x-6 opacity-40">
           <div className="flex items-center space-x-2">
-            <span className="material-icons-round text-base text-slate-400">verified_user</span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Secure</span>
+            <span className="material-icons-round text-base text-slate-400 dark:text-slate-500">verified_user</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Secure</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="material-icons-round text-base text-slate-400">bolt</span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fast</span>
+            <span className="material-icons-round text-base text-slate-400 dark:text-slate-500">bolt</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Fast</span>
           </div>
         </div>
 

@@ -1,50 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f6f6f8;
-  --foreground: #171717;
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+    --surface: 248 250 252;
+    --border: 226 232 240;
+    --primary: 11 220 133;
+  }
+
+  .dark {
+    --background: 9 9 11;
+    --foreground: 241 245 249;
+    --surface: 18 18 20;
+    --border: 31 31 35;
+  }
+
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-family: "Inter", sans-serif;
+  }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@layer utilities {
+  .bg-background-light {
+    background-color: rgb(255 255 255);
+  }
+  
+  .dark .bg-background-light {
+    background-color: rgb(var(--background));
+  }
 
-  /* Custom Colors from Prototype */
-  --color-primary: #2513ec;
-  --color-background-light: #f6f6f8;
-  --color-background-dark: #09090b;
-  --color-surface-dark: #121214;
-  --color-border-dark: #1f1f23;
+  .bg-surface-dark {
+    background-color: rgb(var(--surface));
+  }
 
-  --font-display: "Inter", sans-serif;
+  .border-border-dark {
+    border-color: rgb(var(--border));
+  }
 
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-}
+  .bg-primary {
+    background-color: rgb(var(--primary));
+  }
 
-/* Dark mode media query removed for now to prevent mixed theme state */
+  .text-primary {
+    color: rgb(var(--primary));
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+  .glass-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
 
-/* Prototype Utilities */
-.glass-nav {
-  @apply sticky top-0 z-50;
-  background: rgba(9, 9, 11, 0.8);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
+  .dark .glass-nav {
+    background: rgba(9, 9, 11, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
 
-.gradient-blur {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(37, 19, 236, 0.12) 0%, rgba(37, 19, 236, 0) 70%);
-  z-index: -1;
-  filter: blur(40px);
+  .gradient-blur {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+      circle,
+      rgba(11, 220, 133, 0.12) 0%,
+      rgba(11, 220, 133, 0) 70%
+    );
+    z-index: -1;
+    filter: blur(40px);
+  }
 }
