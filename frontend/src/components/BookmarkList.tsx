@@ -20,41 +20,52 @@ export default function BookmarkList({
   userId: string
 }) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks)
-  const supabase = createClient()
 
   useEffect(() => {
+    setBookmarks(initialBookmarks)
+  }, [initialBookmarks])
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    console.log('Setting up broadcast subscription for user:', userId)
+
     const channel = supabase
-      .channel('bookmarks-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'bookmarks',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setBookmarks((current) => [payload.new as Bookmark, ...current])
-          } else if (payload.eventType === 'DELETE') {
-            setBookmarks((current) =>
-              current.filter((bookmark) => bookmark.id !== payload.old.id)
-            )
-          } else if (payload.eventType === 'UPDATE') {
+      .channel('bookmarks')
+      .on('broadcast', { event: 'bookmark_changes' }, (payload) => {
+        console.log('Broadcast event received:', payload)
+        
+        const { type, record, old_record } = payload.payload
+
+        if (type === 'INSERT' && record) {
+          // Only add if it's for this user
+          if (record.user_id === userId) {
+            setBookmarks((current) => [record as Bookmark, ...current])
+          }
+        } else if (type === 'DELETE' && old_record) {
+          setBookmarks((current) =>
+            current.filter((bookmark) => bookmark.id !== old_record.id)
+          )
+        } else if (type === 'UPDATE' && record) {
+          // Only update if it's for this user
+          if (record.user_id === userId) {
             setBookmarks((current) =>
               current.map((bookmark) =>
-                bookmark.id === payload.new.id ? (payload.new as Bookmark) : bookmark
+                bookmark.id === record.id ? (record as Bookmark) : bookmark
               )
             )
           }
         }
-      )
-      .subscribe()
+      })
+      .subscribe((status) => {
+        console.log('Broadcast subscription status:', status)
+      })
 
     return () => {
+      console.log('Cleaning up broadcast subscription')
       supabase.removeChannel(channel)
     }
-  }, [userId, supabase])
+  }, [userId])
 
   if (bookmarks.length === 0) {
     return (
