@@ -20,7 +20,31 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
     const [url, setUrl] = useState('')
     const [loading, setLoading] = useState(false)
     const [deleteModal, setDeleteModal] = useState<{ show: boolean; bookmarkId: string | null }>({ show: false, bookmarkId: null })
+    const [urlError, setUrlError] = useState('')
     const router = useRouter()
+
+    // URL validation function
+    const isValidUrl = (urlString: string): boolean => {
+        if (!urlString) return true // Empty is valid (no error shown for empty state)
+        
+        try {
+            const url = new URL(urlString)
+            return url.protocol === 'http:' || url.protocol === 'https:'
+        } catch {
+            return false
+        }
+    }
+
+    // Handle URL change with validation
+    const handleUrlChange = (value: string) => {
+        setUrl(value)
+        
+        if (value && !isValidUrl(value)) {
+            setUrlError('Please enter a valid URL (e.g., https://example.com)')
+        } else {
+            setUrlError('')
+        }
+    }
 
     // Set up real-time subscription for bookmark changes across tabs
     useEffect(() => {
@@ -64,7 +88,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
     }
 
     const handleSave = async () => {
-        if (!title || !url) return
+        if (!title || !url || !isValidUrl(url)) return
         setLoading(true)
         
         const supabase = createClient()
@@ -77,6 +101,7 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
         if (!error) {
             setTitle('')
             setUrl('')
+            setUrlError('')
         }
         setLoading(false)
     }
@@ -183,25 +208,35 @@ export default function DashboardClient({ user, initialBookmarks }: { user: any,
                                     type="text"
                                 />
                             </div>
-                            <div className="flex-[2] w-full flex items-center px-4 py-2 bg-background-light border border-border-dark rounded-lg">
-                                <span className="material-icons-round text-gray-400 dark:text-gray-500 mr-3 text-lg">link</span>
-                                <input
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    className="bg-transparent border-none focus:ring-0 w-full text-sm text-foreground placeholder-gray-400 dark:placeholder-gray-500 outline-none"
-                                    placeholder="Paste URL here..."
-                                    type="text"
-                                />
+                            <div className="flex-[2] w-full">
+                                <div className={`flex items-center px-4 py-2 bg-background-light border rounded-lg transition-colors ${urlError ? 'border-red-500' : 'border-border-dark'}`}>
+                                    <span className={`material-icons-round mr-3 text-lg ${urlError ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>link</span>
+                                    <input
+                                        value={url}
+                                        onChange={(e) => handleUrlChange(e.target.value)}
+                                        className="bg-transparent border-none focus:ring-0 w-full text-sm text-foreground placeholder-gray-400 dark:placeholder-gray-500 outline-none"
+                                        placeholder="Paste URL here..."
+                                        type="text"
+                                    />
+                                </div>
                             </div>
                             <button
                                 onClick={handleSave}
-                                disabled={loading}
-                                className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center shadow-lg shadow-primary/20 cursor-pointer disabled:opacity-50"
+                                disabled={loading || !title || !url || !!urlError}
+                                className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center shadow-lg shadow-primary/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="material-icons-round mr-2 text-base">add</span>
                                 {loading ? 'Saving...' : 'Save'}
                             </button>
                         </div>
+                        {urlError && (
+                            <div className="mt-2 px-2">
+                                <p className="text-xs text-red-500 flex items-center">
+                                    <span className="material-icons-round text-sm mr-1">error</span>
+                                    {urlError}
+                                </p>
+                            </div>
+                        )}
                     </div>
                     <div className="mt-4 flex justify-center">
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-widest font-semibold flex items-center opacity-70">
