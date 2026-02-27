@@ -9,10 +9,16 @@ export default function Home() {
   const supabase = createClient()
 
   const handleGoogleSignIn = async () => {
+    // Always use HTTPS in production, allow protocol in development
+    const isProduction = process.env.NODE_ENV === 'production'
+    const protocol = isProduction ? 'https' : (typeof window !== 'undefined' ? window.location.protocol : 'http')
+    const host = typeof window !== 'undefined' ? window.location.host : 'pinzo.sivaganesh.in'
+    const redirectUrl = `${protocol}//${host}/auth/callback`
+    
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
       },
     })
   }
