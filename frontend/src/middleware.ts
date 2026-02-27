@@ -2,6 +2,14 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Force HTTPS — Vercel sets x-forwarded-proto to 'http' when visited over plain HTTP
+  const proto = request.headers.get('x-forwarded-proto')
+  if (proto === 'http') {
+    const httpsUrl = request.nextUrl.clone()
+    httpsUrl.protocol = 'https'
+    return NextResponse.redirect(httpsUrl, { status: 301 })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
